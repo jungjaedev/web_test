@@ -1,37 +1,35 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Canvas = props => {
-  const canvasRef = useRef(null);
+  const [first, setFirst] = useState('');
+  const [canvas, setCanvas] = useState();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const draw = (ctx, frameCount) => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.fillStyle = '#000000';
-    ctx.beginPath();
-    ctx.arc(50, 100, 20 * Math.sin(frameCount * 0.05) ** 2, 0, 2 * Math.PI);
-    ctx.fill();
-  };
+  class Player {
+    constructor() {
+      this.position = {
+        x: 100,
+        y: 100,
+      };
+      this.width = 100;
+      this.height = 100;
+    }
+    draw() {
+      first.fillRect(this.position.x, this.position.y, this.width, this.height);
+    }
+  }
+  if (first !== '') {
+    const player = new Player();
+    player.draw(first);
+  }
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    let frameCount = 0;
-    let animationFrameId;
+    setCanvas(props.canvasRef.current);
+    const context = props.canvas.getContext('2d');
 
-    //Our draw came here
-    const render = () => {
-      frameCount++;
-      draw(context, frameCount);
-      animationFrameId = window.requestAnimationFrame(render);
-    };
-    render();
+    setFirst(context);
+  }, [canvas]);
 
-    return () => {
-      window.cancelAnimationFrame(animationFrameId);
-    };
-  }, [draw]);
-
-  return <canvas ref={canvasRef} {...props} />;
+  return <canvas ref={props.canvasRef} />;
 };
 
 export default Canvas;
